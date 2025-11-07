@@ -356,22 +356,24 @@ void serialize(raft::resources const& res,
   uint32_t max_degree          = 0;
   size_t index_size            = 24;  // Starting metadata
   uint32_t start               = static_cast<uint32_t>(index_.medoid());
-  size_t num_frozen_points     = 0;
-  uint32_t max_observed_degree = 0;
 
-  index_of.write((char*)&index_size, sizeof(uint64_t));
-  index_of.write((char*)&max_observed_degree, sizeof(uint32_t));
-  index_of.write((char*)&start, sizeof(uint32_t));
-  index_of.write((char*)&num_frozen_points, sizeof(size_t));
+  // 将 extent 结果保存到变量中，以便取地址
+  uint64_t graph_rows = h_graph.extent(0);
+  uint64_t graph_cols = h_graph.extent(1);
+
+  index_of.write((char*)&graph_rows, sizeof(uint64_t));
 
   size_t total_edges = 0;
   size_t num_sparse  = 0;
   size_t num_single  = 0;
 
+  int64_t nodes_sum = 0;
+
   for (uint32_t i = 0; i < h_graph.extent(0); i++) {
     uint32_t node_edges = 0;
     for (; node_edges < h_graph.extent(1); node_edges++) {
       if (h_graph(i, node_edges) == raft::upper_bound<IdxT>()) { break; }
+      nodes_sum += h_graph(i, node_edges);
     }
 
     if (node_edges < 3) num_sparse++;
@@ -387,9 +389,11 @@ void serialize(raft::resources const& res,
     max_degree = node_edges > max_degree ? (uint32_t)node_edges : max_degree;
     index_size += (size_t)(sizeof(uint32_t) * (node_edges + 1));
   }
-  index_of.seekp(file_offset, index_of.beg);
-  index_of.write((char*)&index_size, sizeof(uint64_t));
-  index_of.write((char*)&max_degree, sizeof(uint32_t));
+  printf("cjl1 VAMANA graph: graph_rows=%lu, graph_cols=%lu, total_edges=%ld, nodes_sum=%ld\n", graph_rows, graph_cols, total_edges, nodes_sum);
+
+  // index_of.seekp(file_offset, index_of.beg);
+  // index_of.write((char*)&index_size, sizeof(uint64_t));
+  // index_of.write((char*)&max_degree, sizeof(uint32_t));
 
   RAFT_LOG_DEBUG(
     "Wrote file out, index size:%lu, max_degree:%u, num_sparse:%ld, num_single:%ld, total "

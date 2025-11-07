@@ -58,24 +58,80 @@ void serialize(raft::resources const& res,
   RAFT_LOG_DEBUG(
     "Saving CAGRA index, size %zu, dim %u", static_cast<size_t>(index_.size()), index_.dim());
 
-  std::string dtype_string = raft::detail::numpy_serializer::get_numpy_dtype<T>().to_string();
-  dtype_string.resize(4);
-  os << dtype_string;
+  // Write index metadata directly
+  uint64_t n_rows = static_cast<uint64_t>(index_.size());
+  uint64_t n_cols = static_cast<uint64_t>(index_.dim());
+  uint64_t graph_degree = static_cast<uint64_t>(index_.graph_degree());
+  
+  // Copy graph from device to host
+  auto graph = index_.graph();
+  auto h_graph = raft::make_host_matrix<IdxT, int64_t>(graph.extent(0), graph.extent(1));
+  
+  raft::copy(h_graph.data_handle(),
+             graph.data_handle(),
+             graph.size(),
+             raft::resource::get_cuda_stream(res));
+  raft::resource::sync_stream(res);
 
-  raft::serialize_scalar(res, os, serialization_version);
-  raft::serialize_scalar(res, os, index_.size());
-  raft::serialize_scalar(res, os, index_.dim());
-  raft::serialize_scalar(res, os, index_.graph_degree());
-  raft::serialize_scalar(res, os, index_.metric());
+  // Write graph data
+  uint64_t graph_rows = h_graph.extent(0);
+  uint64_t graph_cols = h_graph.extent(1);
 
-  raft::serialize_mdspan(res, os, index_.graph());
+  std::ofstream log_ofs("/home/ubuntu/cuvs/graph.txt");
+  log_ofs<<"cjl start os.tellp()="<<os.tellp()<<std::endl;
+  
+  os.write(reinterpret_cast<const char*>(&graph_rows), sizeof(uint64_t));
+  log_ofs<<"cjl graph_rows os.tellp()="<<os.tellp()<<std::endl;
+  
+  int64_t total_edges = 0;
+  int64_t nodes_sum = 0;
+  for (uint32_t i = 0; i < h_graph.extent(0); i++) {
+    uint32_t node_edges = 0;
+    for (; node_edges < h_graph.extent(1); node_edges++) {
+      if (h_graph(i, node_edges) == raft::upper_bound<IdxT>()) { break; }
+      nodes_sum += h_graph(i, node_edges);
+    }
+    total_edges += node_edges;
+    os.write((char*)&node_edges, sizeof(uint32_t));
+    os.write((char*)&h_graph(i, 0), node_edges * sizeof(uint32_t));
+    log_ofs<<"cjl i="<<i<<" node_edges="<<node_edges<<" os.tellp()="<<os.tellp()<<std::endl;
+  }
+  log_ofs<<"cjl end os.tellp()="<<os.tellp()<<std::endl;
+  log_ofs.close();
+  printf("cjl1 CAGRA graph: graph_rows=%lu, graph_cols=%lu, total_edges=%ld, nodes_sum=%ld\n", graph_rows, graph_cols, total_edges, nodes_sum);
 
   include_dataset &= (index_.data().n_rows() > 0);
 
-  raft::serialize_scalar(res, os, include_dataset);
   if (include_dataset) {
     RAFT_LOG_DEBUG("Saving CAGRA index with dataset");
-    neighbors::detail::serialize(res, os, index_.data());
+    
+    // Copy dataset from device to host
+    auto dataset = index_.dataset();
+    auto h_dataset = raft::make_host_matrix<T, int64_t>(dataset.extent(0), dataset.extent(1));
+    
+    RAFT_CUDA_TRY(cudaMemcpy2DAsync(h_dataset.data_handle(),
+                                    sizeof(T) * h_dataset.extent(1),
+                                    dataset.data_handle(),
+                                    sizeof(T) * dataset.stride(0),
+                                    sizeof(T) * h_dataset.extent(1),
+                                    dataset.extent(0),
+                                    cudaMemcpyDefault,
+                                    raft::resource::get_cuda_stream(res)));
+    raft::resource::sync_stream(res);
+    
+    // Write dataset dimensions
+    uint64_t data_rows = h_dataset.extent(0);
+    uint64_t data_cols = h_dataset.extent(1);
+    os.write(reinterpret_cast<const char*>(&data_rows), sizeof(uint64_t));
+    os.write(reinterpret_cast<const char*>(&data_cols), sizeof(uint64_t));
+    
+    // Write dataset vectors
+    for (int64_t i = 0; i < h_dataset.extent(0); i++) {
+      for (int64_t j = 0; j < h_dataset.extent(1); j++) {
+        T value = h_dataset(i, j);
+        os.write(reinterpret_cast<const char*>(&value), sizeof(T));
+      }
+    }
   } else {
     RAFT_LOG_DEBUG("Saving CAGRA index WITHOUT dataset");
   }

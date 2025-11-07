@@ -766,6 +766,11 @@ index<T, IdxT> build(
           intermediate_degree);
         nn_descent_params =
           cagra::graph_build_params::nn_descent_params(intermediate_degree, params.metric);
+        if (std::holds_alternative<cagra::graph_build_params::nn_descent_params>(params.graph_build_params)) {
+          nn_descent_params.max_iterations = std::get<cagra::graph_build_params::nn_descent_params>(params.graph_build_params).max_iterations;
+          nn_descent_params.termination_threshold = std::get<cagra::graph_build_params::nn_descent_params>(params.graph_build_params).termination_threshold;
+          nn_descent_params.return_distances = std::get<cagra::graph_build_params::nn_descent_params>(params.graph_build_params).return_distances;
+        }
       }
 
       // Use nn-descent to build CAGRA knn graph

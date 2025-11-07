@@ -1172,7 +1172,8 @@ void GNND<Data_t, Index_t>::build(Data_t* data,
     graph_.sample_graph(false);
   };
 
-  for (size_t it = 0; it < build_config_.max_iterations; it++) {
+  size_t total_iterations = 0;
+  for (; total_iterations < build_config_.max_iterations; total_iterations++) {
     raft::copy(d_list_sizes_new_.data_handle(),
                graph_.h_list_sizes_new.data_handle(),
                nrow_,
@@ -1187,9 +1188,9 @@ void GNND<Data_t, Index_t>::build(Data_t* data,
                raft::resource::get_cuda_stream(res));
     raft::resource::sync_stream(res);
 
-    std::thread update_and_sample_thread(update_and_sample, it);
+    std::thread update_and_sample_thread(update_and_sample, total_iterations);
 
-    RAFT_LOG_DEBUG("# GNND iteraton: %lu / %lu", it + 1, build_config_.max_iterations);
+    RAFT_LOG_DEBUG("# GNND iteraton: %lu / %lu", total_iterations + 1, build_config_.max_iterations);
 
     // Reuse dists_buffer_ to save GPU memory. graph_buffer_ cannot be reused, because it
     // contains some information for local_join.
@@ -1237,6 +1238,7 @@ void GNND<Data_t, Index_t>::build(Data_t* data,
 
     graph_.sample_graph_new(graph_host_buffer_.data_handle(), DEGREE_ON_DEVICE);
   }
+  RAFT_LOG_INFO("# GNND total iterations: %lu", total_iterations);
 
   graph_.update_graph(graph_host_buffer_.data_handle(),
                       dists_host_buffer_.data_handle(),

@@ -1,0 +1,209 @@
+<mxfile host="app.diagrams.net" modified="2024-01-26T08:00:00.000Z" agent="Claude" version="22.1.0">
+  <diagram name="GPU内存变化" id="memory-change">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- 标题 -->
+        <mxCell id="title" value="GPU 内存变化示意图 (总显存 12G)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1;fontFamily=Helvetica" vertex="1" parent="1">
+          <mxGeometry x="300" y="15" width="400" height="35" as="geometry"/>
+        </mxCell>
+
+        <!-- ========== 第1行：初始化后 ========== -->
+        <mxCell id="state1-box" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#333333;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="100" y="65" width="900" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="state1-ws" value="Workspace 1G" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1565C0;strokeColor=#0D47A1;fontColor=#FFFFFF;fontSize=13;fontStyle=1;fontFamily=Helvetica" vertex="1" parent="1">
+          <mxGeometry x="100" y="65" width="75" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="state1-free" value="可用 11G" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#EEEEEE;strokeColor=#999999;fontColor=#555555;fontSize=13;fontStyle=1;fontFamily=Helvetica" vertex="1" parent="1">
+          <mxGeometry x="175" y="65" width="825" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- 箭头1 -->
+        <mxCell id="arrow1" value="" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#555555;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="550" y="125" as="sourcePoint"/>
+            <mxPoint x="550" y="155" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arrow1-label" value="Build 索引 a (2G)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=12;fontColor=#333333;fontStyle=1;fontFamily=Helvetica" vertex="1" parent="1">
+          <mxGeometry x="560" y="128" width="130" height="24" as="geometry"/>
+        </mxCell>
+
+        <!-- ========== 第2行：Build 索引 a ========== -->
+        <mxCell id="state2-box" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#333333;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="100" y="165" width="900" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="state2-ws" value="Workspace 1G" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1565C0;strokeColor=#0D47A1;fontColor=#FFFFFF;fontSize=13;fontStyle=1;fontFamily=Helvetica" vertex="1" parent="1">
+          <mxGeometry x="100" y="165" width="75" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="state2-free1" value="可用 4G" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#EEEEEE;strokeColor=#999999;fontColor=#555555;fontSize=13;fontStyle=1;fontFamily=Helvetica" vertex="1" parent="1">
+          <mxGeometry x="175" y="165" width="300" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="state2-idx" value="索引 a 2G" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FF9800;strokeColor=#E65100;fontColor=#FFFFFF;fontSize=13;fontStyle=1;fontFamily=Helvetica" vertex="1" parent="1">
+          <mxGeometry x="475" y="165" width="150" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="state2-free2" value="可用 5G" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#EEEEEE;strokeColor=#999999;fontColor=#555555;fontSize=13;fontStyle=1;fontFamily=Helvetica" vertex="1" parent="1">
+          <mxGeometry x="625" y="165" width="375" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- 箭头2 -->
+        <mxCell id="arrow2" value="" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#555555;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="550" y="225" as="sourcePoint"/>
+            <mxPoint x="550" y="255" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arrow2-label" value="Search (触发 Main Pool 创建)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=12;fontColor=#333333;fontStyle=1;fontFamily=Helvetica" vertex="1" parent="1">
+          <mxGeometry x="560" y="228" width="200" height="24" as="geometry"/>
+        </mxCell>
+
+        <!-- ========== 第3行：Search 创建 Main Pool ========== -->
+        <mxCell id="state3-box" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#333333;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="100" y="265" width="900" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="state3-ws" value="Workspace 1G" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1565C0;strokeColor=#0D47A1;fontColor=#FFFFFF;fontSize=13;fontStyle=1;fontFamily=Helvetica" vertex="1" parent="1">
+          <mxGeometry x="100" y="265" width="75" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="state3-free1" value="可用 4G" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#EEEEEE;strokeColor=#999999;fontColor=#555555;fontSize=13;fontStyle=1;fontFamily=Helvetica" vertex="1" parent="1">
+          <mxGeometry x="175" y="265" width="300" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="state3-idx" value="索引 a 2G" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FF9800;strokeColor=#E65100;fontColor=#FFFFFF;fontSize=13;fontStyle=1;fontFamily=Helvetica" vertex="1" parent="1">
+          <mxGeometry x="475" y="265" width="150" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="state3-free2" value="可用 3G" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#EEEEEE;strokeColor=#999999;fontColor=#555555;fontSize=13;fontStyle=1;fontFamily=Helvetica" vertex="1" parent="1">
+          <mxGeometry x="625" y="265" width="225" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="state3-main" value="Main Pool 2G" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#4CAF50;strokeColor=#2E7D32;fontColor=#FFFFFF;fontSize=13;fontStyle=1;fontFamily=Helvetica" vertex="1" parent="1">
+          <mxGeometry x="850" y="265" width="150" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- 箭头3 -->
+        <mxCell id="arrow3" value="" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#555555;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="550" y="325" as="sourcePoint"/>
+            <mxPoint x="550" y="355" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arrow3-label" value="释放索引 a" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=12;fontColor=#333333;fontStyle=1;fontFamily=Helvetica" vertex="1" parent="1">
+          <mxGeometry x="560" y="328" width="100" height="24" as="geometry"/>
+        </mxCell>
+
+        <!-- ========== 第4行：释放索引 a ========== -->
+        <mxCell id="state4-box" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#333333;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="100" y="365" width="900" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="state4-ws" value="Workspace 1G" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1565C0;strokeColor=#0D47A1;fontColor=#FFFFFF;fontSize=13;fontStyle=1;fontFamily=Helvetica" vertex="1" parent="1">
+          <mxGeometry x="100" y="365" width="75" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="state4-free1" value="可用 9G" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#EEEEEE;strokeColor=#999999;fontColor=#555555;fontSize=13;fontStyle=1;fontFamily=Helvetica" vertex="1" parent="1">
+          <mxGeometry x="175" y="365" width="675" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="state4-main" value="Main Pool 2G" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#4CAF50;strokeColor=#2E7D32;fontColor=#FFFFFF;fontSize=13;fontStyle=1;fontFamily=Helvetica" vertex="1" parent="1">
+          <mxGeometry x="850" y="365" width="150" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- 箭头4 -->
+        <mxCell id="arrow4" value="" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#555555;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="550" y="425" as="sourcePoint"/>
+            <mxPoint x="550" y="455" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arrow4-label" value="Build 索引 b (4G，Main Pool 扩展)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=12;fontColor=#333333;fontStyle=1;fontFamily=Helvetica" vertex="1" parent="1">
+          <mxGeometry x="560" y="428" width="220" height="24" as="geometry"/>
+        </mxCell>
+
+        <!-- ========== 第5行：Build 索引 b - Main Pool 扩展 ========== -->
+        <mxCell id="state5-box" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#333333;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="100" y="465" width="900" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="state5-ws" value="Workspace 1G" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1565C0;strokeColor=#0D47A1;fontColor=#FFFFFF;fontSize=13;fontStyle=1;fontFamily=Helvetica" vertex="1" parent="1">
+          <mxGeometry x="100" y="465" width="75" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="state5-free1" value="可用 1G" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#EEEEEE;strokeColor=#999999;fontColor=#555555;fontSize=13;fontStyle=1;fontFamily=Helvetica" vertex="1" parent="1">
+          <mxGeometry x="175" y="465" width="75" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="state5-main2" value="Main Pool 扩展块 4G (索引 b)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#4CAF50;strokeColor=#2E7D32;fontColor=#FFFFFF;fontSize=13;fontStyle=1;fontFamily=Helvetica" vertex="1" parent="1">
+          <mxGeometry x="250" y="465" width="300" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="state5-gap" value="~4G 空洞" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFF9C4;strokeColor=#F9A825;fontColor=#6D4C41;fontSize=13;fontStyle=1;fontFamily=Helvetica;dashed=1;dashPattern=5 5;" vertex="1" parent="1">
+          <mxGeometry x="550" y="465" width="300" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="state5-main1" value="Main Pool 原块 2G" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#4CAF50;strokeColor=#2E7D32;fontColor=#FFFFFF;fontSize=13;fontStyle=1;fontFamily=Helvetica" vertex="1" parent="1">
+          <mxGeometry x="850" y="465" width="150" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- 箭头5 -->
+        <mxCell id="arrow5" value="" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#555555;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="550" y="525" as="sourcePoint"/>
+            <mxPoint x="550" y="555" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arrow5-label" value="释放索引 b" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=12;fontColor=#333333;fontStyle=1;fontFamily=Helvetica" vertex="1" parent="1">
+          <mxGeometry x="560" y="528" width="100" height="24" as="geometry"/>
+        </mxCell>
+
+        <!-- ========== 第6行：释放索引 b ========== -->
+        <mxCell id="state6-box" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#333333;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="100" y="565" width="900" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="state6-ws" value="Workspace 1G" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1565C0;strokeColor=#0D47A1;fontColor=#FFFFFF;fontSize=13;fontStyle=1;fontFamily=Helvetica" vertex="1" parent="1">
+          <mxGeometry x="100" y="565" width="75" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="state6-free1" value="可用 1G" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#EEEEEE;strokeColor=#999999;fontColor=#555555;fontSize=13;fontStyle=1;fontFamily=Helvetica" vertex="1" parent="1">
+          <mxGeometry x="175" y="565" width="75" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="state6-main2" value="Main Pool 块 4G (空闲)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#81C784;strokeColor=#2E7D32;fontColor=#1B5E20;fontSize=13;fontStyle=1;fontFamily=Helvetica" vertex="1" parent="1">
+          <mxGeometry x="250" y="565" width="300" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="state6-gap" value="~4G 空洞" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFF9C4;strokeColor=#F9A825;fontColor=#6D4C41;fontSize=13;fontStyle=1;fontFamily=Helvetica;dashed=1;dashPattern=5 5;" vertex="1" parent="1">
+          <mxGeometry x="550" y="565" width="300" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="state6-main1" value="Main Pool 块 2G (空闲)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#81C784;strokeColor=#2E7D32;fontColor=#1B5E20;fontSize=13;fontStyle=1;fontFamily=Helvetica" vertex="1" parent="1">
+          <mxGeometry x="850" y="565" width="150" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- 箭头6 -->
+        <mxCell id="arrow6" value="" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#555555;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="550" y="625" as="sourcePoint"/>
+            <mxPoint x="550" y="655" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arrow6-label" value="Build 索引 c (需要 5G 连续内存)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=12;fontColor=#333333;fontStyle=1;fontFamily=Helvetica" vertex="1" parent="1">
+          <mxGeometry x="560" y="628" width="210" height="24" as="geometry"/>
+        </mxCell>
+
+        <!-- ========== 第7行：Build 索引 c 失败 ========== -->
+        <mxCell id="state7-box" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#C62828;strokeWidth=3;" vertex="1" parent="1">
+          <mxGeometry x="100" y="665" width="900" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="state7-ws" value="Workspace 1G" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1565C0;strokeColor=#0D47A1;fontColor=#FFFFFF;fontSize=13;fontStyle=1;fontFamily=Helvetica" vertex="1" parent="1">
+          <mxGeometry x="100" y="665" width="75" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="state7-free1" value="可用 1G" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#EEEEEE;strokeColor=#999999;fontColor=#555555;fontSize=13;fontStyle=1;fontFamily=Helvetica" vertex="1" parent="1">
+          <mxGeometry x="175" y="665" width="75" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="state7-main2" value="Main Pool 块 4G (空闲)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#81C784;strokeColor=#2E7D32;fontColor=#1B5E20;fontSize=13;fontStyle=1;fontFamily=Helvetica" vertex="1" parent="1">
+          <mxGeometry x="250" y="665" width="300" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="state7-gap" value="~4G 空洞" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFF9C4;strokeColor=#F9A825;fontColor=#6D4C41;fontSize=13;fontStyle=1;fontFamily=Helvetica;dashed=1;dashPattern=5 5;" vertex="1" parent="1">
+          <mxGeometry x="550" y="665" width="300" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="state7-main1" value="Main Pool 块 2G (空闲)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#81C784;strokeColor=#2E7D32;fontColor=#1B5E20;fontSize=13;fontStyle=1;fontFamily=Helvetica" vertex="1" parent="1">
+          <mxGeometry x="850" y="665" width="150" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- 失败标记 -->
+        <mxCell id="fail-mark" value="❌ 分配失败：最大连续块 4G &lt; 需要 5G" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=14;fontColor=#C62828;fontStyle=1;fontFamily=Helvetica" vertex="1" parent="1">
+          <mxGeometry x="350" y="725" width="300" height="30" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

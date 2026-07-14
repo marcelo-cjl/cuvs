@@ -151,6 +151,13 @@ struct index_params : cuvs::neighbors::index_params {
   bool attach_dataset_on_build = true;
 
   /**
+   * Optional device pointer [dataset_rows, 4] with row-wise SQ8 params
+   * {norm, scale, min, sum_q}. Experimental: used by iterative graph build
+   * when searching int8 datasets with L2Expanded distance.
+   */
+  const float* rowwise_sq8_dataset_params = nullptr;
+
+  /**
    * @brief Create a CAGRA index parameters compatible with HNSW index
    *
    * @param dataset The shape of the input dataset
@@ -232,6 +239,16 @@ struct search_params : cuvs::neighbors::search_params {
   size_t search_width = 1;
   /** Lower limit of search iterations. */
   size_t min_iterations = 0;
+
+  /** Optional device pointer [n_queries] to store executed iterations per query. */
+  uint32_t* num_executed_iterations = nullptr;
+
+  /**
+   * Optional device pointers [rows, 4] with row-wise SQ8 params
+   * {norm, scale, min, sum_q}. Experimental: used by int8 L2Expanded distance.
+   */
+  const float* rowwise_sq8_dataset_params = nullptr;
+  const float* rowwise_sq8_query_params   = nullptr;
 
   /** Thread block size. 0, 64, 128, 256, 512, 1024. Auto selection when 0. */
   size_t thread_block_size = 0;

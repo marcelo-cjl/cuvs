@@ -83,6 +83,7 @@ struct alignas(device::LOAD_128BIT_T) dataset_descriptor_base_t {
   struct alignas(LOAD_T) args_t {
     void* extra_ptr1;
     void* extra_ptr2;
+    void* extra_ptr3;
     /** Pointer to the workspace in the shared memory (filled in every copy by a thread block). */
     uint32_t smem_ws_ptr;
     /** Dimensionality of the data/queries. */
@@ -165,7 +166,7 @@ struct alignas(device::LOAD_128BIT_T) dataset_descriptor_base_t {
       compute_distance_impl(compute_distance_impl),
       size(size),
       smem_and_team_size(smem_ws_size_in_bytes, team_size_bitshift),
-      args{nullptr, nullptr, 0, dim, 0, 0}
+      args{nullptr, nullptr, nullptr, 0, dim, 0, 0}
   {
   }
 

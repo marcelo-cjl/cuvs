@@ -80,6 +80,8 @@ namespace descriptor_cache {
 struct key {
   uint64_t data_ptr;
   uint64_t n_rows;
+  uint64_t rowwise_sq8_dataset_params;
+  uint64_t rowwise_sq8_query_params;
   uint32_t dim;
   uint32_t extra_val;  // this one has different meanings for different descriptor types
   uint32_t team_size;
@@ -94,6 +96,8 @@ auto make_key(const cagra::search_params& params,
 {
   return key{reinterpret_cast<uint64_t>(dataset.view().data_handle()),
              uint64_t(dataset.n_rows()),
+             reinterpret_cast<uint64_t>(params.rowwise_sq8_dataset_params),
+             reinterpret_cast<uint64_t>(params.rowwise_sq8_query_params),
              dataset.dim(),
              dataset.stride(),
              uint32_t(params.team_size),
@@ -108,6 +112,8 @@ auto make_key(const cagra::search_params& params,
 {
   return key{reinterpret_cast<uint64_t>(dataset.data.data_handle()),
              uint64_t(dataset.n_rows()),
+             reinterpret_cast<uint64_t>(params.rowwise_sq8_dataset_params),
+             reinterpret_cast<uint64_t>(params.rowwise_sq8_query_params),
              dataset.dim(),
              uint32_t(reinterpret_cast<uint64_t>(dataset.pq_code_book.data_handle()) >> 6),
              uint32_t(params.team_size),
@@ -117,13 +123,17 @@ auto make_key(const cagra::search_params& params,
 inline auto operator==(const key& a, const key& b) -> bool
 {
   return a.data_ptr == b.data_ptr && a.n_rows == b.n_rows && a.dim == b.dim &&
+         a.rowwise_sq8_dataset_params == b.rowwise_sq8_dataset_params &&
+         a.rowwise_sq8_query_params == b.rowwise_sq8_query_params &&
          a.extra_val == b.extra_val && a.team_size == b.team_size && a.metric == b.metric;
 }
 
 struct key_hash {
   inline auto operator()(const key& x) const noexcept -> std::size_t
   {
-    return size_t{x.data_ptr} + size_t{x.n_rows} * size_t{x.dim} * size_t{x.extra_val} +
+    return size_t{x.data_ptr} + size_t{x.rowwise_sq8_dataset_params} +
+           (size_t{x.rowwise_sq8_query_params} << 1) +
+           size_t{x.n_rows} * size_t{x.dim} * size_t{x.extra_val} +
            (size_t{x.team_size} ^ size_t{x.metric});
   }
 };

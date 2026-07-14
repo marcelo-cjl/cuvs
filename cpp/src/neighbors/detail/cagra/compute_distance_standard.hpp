@@ -42,7 +42,9 @@ struct standard_descriptor_spec : public instance_spec<DataT, IndexT, DistanceT>
                  IndexT(dataset.n_rows()),
                  dataset.dim(),
                  dataset.stride(),
-                 dataset_norms);
+                 dataset_norms,
+                 params.rowwise_sq8_dataset_params,
+                 params.rowwise_sq8_query_params);
   }
 
   template <typename DatasetT>
@@ -64,7 +66,9 @@ struct standard_descriptor_spec : public instance_spec<DataT, IndexT, DistanceT>
     IndexT size,
     uint32_t dim,
     uint32_t ld,
-    const DistanceT* dataset_norms = nullptr);
+    const DistanceT* dataset_norms = nullptr,
+    const float* rowwise_sq8_dataset_params = nullptr,
+    const float* rowwise_sq8_query_params = nullptr);
 };
 
 }  // namespace cuvs::neighbors::cagra::detail

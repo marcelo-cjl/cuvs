@@ -74,10 +74,13 @@ void search_main_core(
     queries.extent(1));
 
   using CagraSampleFilterT_s = typename CagraSampleFilterT_Selector<CagraSampleFilterT>::type;
+  auto create_plan = [&](const search_params& plan_params) {
+    return factory<DataT, IndexT, DistanceT, CagraSampleFilterT_s, SourceIdxT, OutputIdxT>::create(
+      res, plan_params, dataset_desc, queries.extent(1), graph.extent(0), graph.extent(1), topk);
+  };
   std::unique_ptr<
     search_plan_impl<DataT, IndexT, DistanceT, CagraSampleFilterT_s, SourceIdxT, OutputIdxT>>
-    plan = factory<DataT, IndexT, DistanceT, CagraSampleFilterT_s, SourceIdxT, OutputIdxT>::create(
-      res, params, dataset_desc, queries.extent(1), graph.extent(0), graph.extent(1), topk);
+    plan = create_plan(params);
 
   plan->check(topk);
 
@@ -87,6 +90,16 @@ void search_main_core(
 
   for (unsigned qid = 0; qid < queries.extent(0); qid += max_queries) {
     const uint32_t n_queries = std::min<std::size_t>(max_queries, queries.extent(0) - qid);
+    auto* batch_plan          = plan.get();
+    std::unique_ptr<
+      search_plan_impl<DataT, IndexT, DistanceT, CagraSampleFilterT_s, SourceIdxT, OutputIdxT>>
+      shifted_plan;
+    if (params.rowwise_sq8_query_params != nullptr && qid != 0) {
+      auto shifted_params                       = params;
+      shifted_params.rowwise_sq8_query_params  = params.rowwise_sq8_query_params + qid * 4;
+      shifted_plan                             = create_plan(shifted_params);
+      batch_plan                               = shifted_plan.get();
+    }
     auto _topk_indices_ptr   = neighbors.data_handle() + (topk * qid);
     auto _topk_distances_ptr = distances.data_handle() + (topk * qid);
     // todo(tfeher): one could keep distances optional and pass nullptr
@@ -95,19 +108,20 @@ void search_main_core(
       plan->num_seeds > 0
         ? reinterpret_cast<const IndexT*>(plan->dev_seed.data()) + (plan->num_seeds * qid)
         : nullptr;
-    uint32_t* _num_executed_iterations = nullptr;
+    uint32_t* _num_executed_iterations =
+      params.num_executed_iterations == nullptr ? nullptr : params.num_executed_iterations + qid;
 
-    (*plan)(res,
-            graph,
-            source_indices,
-            _topk_indices_ptr,
-            _topk_distances_ptr,
-            _query_ptr,
-            n_queries,
-            _seed_ptr,
-            _num_executed_iterations,
-            topk,
-            set_offset(sample_filter, qid));
+    (*batch_plan)(res,
+                  graph,
+                  source_indices,
+                  _topk_indices_ptr,
+                  _topk_distances_ptr,
+                  _query_ptr,
+                  n_queries,
+                  _seed_ptr,
+                  _num_executed_iterations,
+                  topk,
+                  set_offset(sample_filter, qid));
   }
 }
 

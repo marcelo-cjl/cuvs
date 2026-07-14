@@ -1834,6 +1834,7 @@ auto iterative_build_graph(
     search_params.algo        = cuvs::neighbors::cagra::search_algo::AUTO;
     search_params.max_queries = max_chunk_size;
     search_params.itopk_size  = curr_itopk_size;
+    search_params.rowwise_sq8_dataset_params = params.rowwise_sq8_dataset_params;
 
     // Create an index (idx), a query view (dev_query_view), and a mdarray for
     // search results (neighbors).
@@ -1859,6 +1860,11 @@ auto iterative_build_graph(
       raft::resource::get_cuda_stream(res),
       raft::resource::get_workspace_resource(res));
     for (const auto& batch : query_batch) {
+      auto batch_search_params = search_params;
+      if (params.rowwise_sq8_dataset_params != nullptr) {
+        batch_search_params.rowwise_sq8_query_params =
+          params.rowwise_sq8_dataset_params + static_cast<size_t>(batch.offset()) * 4;
+      }
       auto batch_dev_query_view = raft::make_device_matrix_view<const T, int64_t>(
         batch.data(), batch.size(), dev_query_view.extent(1));
       auto batch_dev_neighbors_view = raft::make_device_matrix_view<IdxT, int64_t>(
@@ -1867,7 +1873,7 @@ auto iterative_build_graph(
         dev_distances.data_handle(), batch.size(), curr_topk);
 
       cuvs::neighbors::cagra::search(res,
-                                     search_params,
+                                     batch_search_params,
                                      idx,
                                      batch_dev_query_view,
                                      batch_dev_neighbors_view,

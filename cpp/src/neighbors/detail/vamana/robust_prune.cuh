@@ -52,10 +52,11 @@ namespace {
 template <typename T,
           typename accT,
           typename IdxT = uint32_t,
+          typename GraphLayoutPolicy = raft::row_major,
           typename Accessor =
             raft::host_device_accessor<cuda::std::default_accessor<T>, raft::memory_type::host>>
 __global__ void RobustPruneKernel(
-  raft::device_matrix_view<IdxT, int64_t> graph,
+  raft::device_matrix_view<IdxT, int64_t, GraphLayoutPolicy> graph,
   raft::mdspan<const T, raft::matrix_extent<int64_t>, raft::row_major, Accessor> dataset,
   void* query_list_ptr,
   int num_queries,
